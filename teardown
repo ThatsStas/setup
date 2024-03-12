@@ -1,0 +1,6 @@
+rm -rf ~/Downloads/* ~/Desktop/* ~/snap/firefox/common/.mozilla/firefox/$(find . -iname "*.default")/* ~/.bash_history
+
+echo ""
+echo "*** Check Home Directory ***"
+
+ls -a ~
