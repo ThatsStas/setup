@@ -63,3 +63,20 @@ pushd hardening-lab/lab-2026
 make build
 
 popd
+
+
+# --- Custom login banner (MOTD) ---
+# Ubuntu prints /etc/update-motd.d/* output at login via pam_motd. A low number
+# makes this banner appear first. The heredoc is single-quoted so the block
+# characters are written verbatim.
+sudo tee /etc/update-motd.d/01-custom-banner > /dev/null <<'MOTD_SCRIPT'
+#!/bin/sh
+cat <<'BANNER'
+
+▄█████ ▄▄▄▄▄  ▄▄▄▄ ▄▄ ▄▄ ▄▄▄▄  ▄▄ ▄▄▄▄▄▄ ▄▄ ▄▄   ██  ██  ▄▄▄  ▄▄▄▄  ▄▄▄▄  ▄▄▄▄▄ ▄▄  ▄▄ ▄▄ ▄▄  ▄▄  ▄▄▄▄   ██      ▄▄▄  ▄▄▄▄  
+▀▀▀▄▄▄ ██▄▄  ██▀▀▀ ██ ██ ██▄█▄ ██   ██   ▀███▀   ██████ ██▀██ ██▄█▄ ██▀██ ██▄▄  ███▄██ ██ ███▄██ ██ ▄▄   ██     ██▀██ ██▄██ 
+█████▀ ██▄▄▄ ▀████ ▀███▀ ██ ██ ██   ██     █     ██  ██ ██▀██ ██ ██ ████▀ ██▄▄▄ ██ ▀██ ██ ██ ▀██ ▀███▀   ██████ ██▀██ ██▄█▀
+
+BANNER
+MOTD_SCRIPT
+sudo chmod +x /etc/update-motd.d/01-custom-banner
