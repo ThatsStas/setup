@@ -41,10 +41,6 @@ sudo apt install -y \
     cargo rustc \
     util-linux-extra 
 
-# weggli is not packaged for Ubuntu either; build it with cargo (needs network).
-cargo install weggli --version 0.2.4 --root "$HOME/.local" \
-    && "$HOME/.local/bin/weggli" --version
-
 # FFmpeg dev libs for the FreeRDP build target (Fedora's ffmpeg-free-devel).
 sudo apt install -y libavcodec-dev libavutil-dev libavformat-dev
 
@@ -64,7 +60,7 @@ sudo apt update
 
 # Build dependencies for the offline C/C++ targets. On Ubuntu this is `apt build-dep`,
 # which needs the source (deb-src) repositories enabled above.
-sudo apt build-dep -y bzip2 libxml2 assimp imagemagick freerdp2 || \
+sudo apt build-dep -y bzip2 libxml2 assimp imagemagick  || \
     echo "apt build-dep failed: check that deb-src repositories are enabled, then re-run the build-dep line"
 
 sudo usermod -aG docker $USER
