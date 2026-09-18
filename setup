@@ -27,13 +27,13 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin d
 sudo apt install -y \
     gcc clang make cmake meson ninja-build \
     autoconf automake libtool pkg-config bison flex texinfo \
-    rpm rpmdevtools cpio dpkg-dev \
+    cpio dpkg-dev \
     checksec binutils elfutils file \
     openssl devscripts \
     linux-tools-common linux-tools-generic \
     openssh-server nftables systemd \
     lynis \
-    sudo time \
+    time \
     procps iproute2 \
     git tree \
     libcmocka-dev check \
