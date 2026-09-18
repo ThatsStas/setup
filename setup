@@ -48,10 +48,24 @@ cargo install weggli --version 0.2.4 --root "$HOME/.local" \
 # FFmpeg dev libs for the FreeRDP build target (Fedora's ffmpeg-free-devel).
 sudo apt install -y libavcodec-dev libavutil-dev libavformat-dev
 
+# Enable deb-src source repositories so `apt build-dep` can resolve build deps.
+# Ubuntu 24.04+ ships the deb822 format (ubuntu.sources) with only `Types: deb`;
+# 22.04 and earlier use the legacy sources.list with commented `# deb-src` lines.
+if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
+    # deb822: append `deb-src` to any `Types:` line that lacks it.
+    sudo sed -i -E '/^Types:/{/deb-src/!s/$/ deb-src/}' \
+        /etc/apt/sources.list.d/ubuntu.sources
+fi
+if grep -q '^# deb-src' /etc/apt/sources.list 2>/dev/null; then
+    # legacy: uncomment the deb-src lines.
+    sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list
+fi
+sudo apt update
+
 # Build dependencies for the offline C/C++ targets. On Ubuntu this is `apt build-dep`,
-# which needs source (deb-src) repositories enabled in the apt sources first.
+# which needs the source (deb-src) repositories enabled above.
 sudo apt build-dep -y bzip2 libxml2 assimp imagemagick freerdp2 || \
-    echo "apt build-dep failed: enable deb-src repositories, then re-run the build-dep line"
+    echo "apt build-dep failed: check that deb-src repositories are enabled, then re-run the build-dep line"
 
 sudo usermod -aG docker $USER
 
