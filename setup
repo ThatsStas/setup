@@ -1,5 +1,44 @@
 #!/bin/bash
 
+# --- Editors: VS Code + opencode ---------------------------------------------
+# Installs Visual Studio Code (via Microsoft's official apt repo, so it
+# auto-updates with the system) and opencode (the open-source AI coding agent,
+# via its official install script).
+#
+# Guard: run ONLY this step and stop, without the rest of the provisioning, by
+# defining INSTALL_EDITORS_ONLY, e.g.:
+#     INSTALL_EDITORS_ONLY=1 ./setup
+# A normal `./setup` run installs the editors too, then continues.
+install_editors() {
+    # VS Code: Microsoft apt repository (per https://code.visualstudio.com/docs/setup/linux).
+    sudo apt update
+    sudo apt install -y wget gpg apt-transport-https
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc \
+        | gpg --dearmor \
+        | sudo tee /usr/share/keyrings/microsoft.gpg > /dev/null
+    sudo tee /etc/apt/sources.list.d/vscode.sources > /dev/null <<'VSCODE_SOURCES'
+Types: deb
+URIs: https://packages.microsoft.com/repos/code
+Suites: stable
+Components: main
+Architectures: amd64,arm64,armhf
+Signed-By: /usr/share/keyrings/microsoft.gpg
+VSCODE_SOURCES
+    sudo apt update
+    sudo apt install -y code
+
+    # opencode: official install script (installs to the invoking user's home,
+    # so it is NOT run under sudo). See https://opencode.ai/docs/.
+    curl -fsSL https://opencode.ai/install | bash
+}
+
+if [ -n "${INSTALL_EDITORS_ONLY:-}" ]; then
+    install_editors
+    exit 0
+fi
+
+install_editors
+
 # Add Docker's official GPG key (per https://docs.docker.com/engine/install/ubuntu/):
 sudo apt update
 sudo apt install -y ca-certificates curl
