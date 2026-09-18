@@ -11,6 +11,52 @@ sudo apt update -y
 
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin vim binutils ca-certificates curl
 
+# --- "Raising the Security Bar" hardening-lab tools (Ubuntu equivalents of the Fedora image) ---
+# Toolchain + analysis tools. Ubuntu name differences vs Fedora:
+#   pkgconf-pkg-config -> pkg-config, procps-ng -> procps, iproute -> iproute2,
+#   rpm-build -> rpm, rust -> rustc, libcmocka-devel -> libcmocka-dev,
+#   check-devel -> check, python3-pylint -> pylint.
+# perf lives in linux-tools; the -generic metapackage tracks the running kernel.
+# libasan/libubsan runtime libs are versioned on Ubuntu (libasanN) and are pulled
+# in by gcc, so they are not listed explicitly.
+sudo apt install -y \
+    gcc clang make cmake meson ninja-build \
+    autoconf automake libtool pkg-config bison flex texinfo \
+    rpm rpmdevtools cpio dpkg-dev \
+    checksec binutils elfutils file \
+    openssl devscripts \
+    linux-tools-common linux-tools-generic \
+    openssh-server nftables systemd \
+    lynis \
+    sudo time \
+    procps iproute2 \
+    git tree \
+    libcmocka-dev check \
+    pylint python3-pip \
+    cargo rustc
+
+# weggli is not packaged for Ubuntu either; build it with cargo (needs network).
+cargo install weggli --version 0.2.4 --root "$HOME/.local" \
+    && "$HOME/.local/bin/weggli" --version
+
+# FFmpeg dev libs for the FreeRDP build target (Fedora's ffmpeg-free-devel).
+sudo apt install -y libavcodec-dev libavutil-dev libavformat-dev
+
+# Build dependencies for the offline C/C++ targets. On Ubuntu this is `apt build-dep`,
+# which needs source (deb-src) repositories enabled in the apt sources first.
+sudo apt build-dep -y bzip2 libxml2 assimp imagemagick freerdp2 || \
+    echo "apt build-dep failed: enable deb-src repositories, then re-run the build-dep line"
+
 sudo usermod -aG docker $USER
 
 newgrp docker
+
+
+# building the docker image for fedora packaging
+git clone https://github.com/nmanthey/hardening-lab.git
+
+pushd hardening-lab/lab-2026
+
+make build
+
+popd
